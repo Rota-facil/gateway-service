@@ -10,6 +10,24 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - rota-facil-network
+
+  rota-facil-redis:
+    image: redis:7.2-alpine
+    container_name: rota-facil-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    networks:
+      - rota-facil-network
 
 volumes:
   rabbitmq-data:
+  redis-data:
+
+networks:
+  rota-facil-network:
+    driver: bridge

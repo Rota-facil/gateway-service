@@ -1,0 +1,33 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth/**
+
+        - id: file-service
+          uri: lb://file-service
+          predicates:
+            - Path=/files/**
+
+        - id: audit-service
+          uri: lb://audit-service
+          predicates:
+            - Path=/audit/**
+
+        - id: transport-service
+          uri: lb://transport-service
+          predicates:
+            - Path=/transports/**
+
+        - id: places-service
+          uri: lb://places-service
+          predicates:
+            - Path=/places/**
+
+        - id: location-service
+          uri: lb://location-service
+          predicates:
+            - Path=/locations/**
