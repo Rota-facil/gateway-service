@@ -35,7 +35,7 @@ public class TokenManager {
 
 
     public String extractEmail(String token) {
-        return this.extractClaims(token, claims -> claims.get("email", String.class));
+        return this.extractClaims(token, Claims::getSubject);
     }
 
     private Claims extractAllClaims(String token) {
