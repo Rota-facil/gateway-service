@@ -1,0 +1,15 @@
+services:
+  rota-facil-rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rota-facil-rabbitmq
+    ports:
+      - "5672:5672"   # Porta de dados (AMQP)
+      - "15672:15672" # Porta do Painel de Controle (Browser)
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_ADMIN}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+volumes:
+  rabbitmq-data:
