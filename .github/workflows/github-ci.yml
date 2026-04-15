@@ -23,7 +23,7 @@ jobs:
           cache: maven
 
       - name: build-project
-        run: maven clean compile
+        run: mvn clean compile
 
       - name: login-dockerhub
         uses: docker/login-action@v3
