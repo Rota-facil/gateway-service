@@ -36,14 +36,13 @@ public class SecurityFilter implements WebFilter {
         String token = authorization.substring(7);
 
         if (tokenManager.isValidToken(token)) {
-            UUID userId = tokenManager.extractUserId(token);
-
-            if (redisService.getInvalidTokenOfCache(userId) != null) {
+            if (redisService.getInvalidTokenOfCache(token) != null) {
                 exchange.getResponse().setStatusCode(HttpStatusCode.valueOf(401));
                 return exchange.getResponse().setComplete();
             }
 
             // Extração de dados
+            UUID userId = tokenManager.extractUserId(token);
             Role role = tokenManager.extractRole(token);
             String email = tokenManager.extractEmail(token);
             UUID prefectureId = tokenManager.extractPrefectureId(token);
@@ -53,6 +52,7 @@ public class SecurityFilter implements WebFilter {
                     .header("x-user-role", role.name())
                     .header("x-user-email", email)
                     .header("x-prefecture-id", prefectureId != null ? prefectureId.toString() : "")
+                    .header("x-user-token", token)
                     .build();
 
             ServerWebExchange mutatedExchange = exchange.mutate().request(mutatedRequest).build();

@@ -5,18 +5,19 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class RedisService {
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
-    public void putInvalidTokenInCache(UUID keyUserId, String token) {
-        redisTemplate.opsForValue().set(keyUserId.toString(), token);
+    public void putInvalidTokenInCache(String keyToken, UUID userId) {
+        redisTemplate.opsForValue().set(keyToken, userId.toString(), 86400000L, TimeUnit.MILLISECONDS);
     }
 
-    public String getInvalidTokenOfCache(UUID keyUserId) {
-        Object token =  redisTemplate.opsForValue().get(keyUserId.toString());
-        return (token != null) ? token.toString() : null;
+    public UUID getInvalidTokenOfCache(String token) {
+        String userId = redisTemplate.opsForValue().get(token);
+        return (userId != null) ? UUID.fromString(userId) : null;
     }
 }

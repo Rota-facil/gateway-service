@@ -17,15 +17,15 @@ public class TokenManager {
     private final PublicKey publicKey;
 
     public UUID extractUserId(String token) {
-        return this.extractClaims(token, claims -> claims.get("userId", UUID.class));
+        return UUID.fromString(this.extractClaims(token, claims -> claims.get("userId", String.class)));
     }
 
     public Role extractRole(String token) {
-        return this.extractClaims(token, claims -> claims.get("role", Role.class));
+        return Role.valueOf(this.extractClaims(token, claims -> claims.get("role", String.class)));
     }
 
     public UUID extractPrefectureId(String token) {
-        return this.extractClaims(token, claims -> claims.get("prefectureId", UUID.class));
+        return UUID.fromString(this.extractClaims(token, claims -> claims.get("prefectureId", String.class)));
     }
 
     public boolean isValidToken(String token) {

@@ -32,6 +32,9 @@ public class SecurityConfig {
 
                         .pathMatchers("/auth/login/**").permitAll()
                         .pathMatchers("/auth/register/**").permitAll()
+
+                        .pathMatchers("/places/**").hasAnyRole("ADMIN", "SUPERUSER")
+                        .pathMatchers("/audit/**").hasAnyRole("ADMIN", "SUPERUSER")
                         .anyExchange().authenticated()
                 )
                 .build();
