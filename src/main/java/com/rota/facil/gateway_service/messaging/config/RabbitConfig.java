@@ -21,14 +21,14 @@ public class RabbitConfig {
     @Value("${rabbitmq.gateway.user.deleted.queue}")
     private String userDeletedQueue;
 
-    @Value("${rabbitmq.gateway.user.updated.queue}")
-    private String userUpdatedQueue;
+    @Value("${rabbitmq.gateway.user.email.changed.queue}")
+    private String userEmailChangedQueue;
 
     @Value("${rabbitmq.user.deleted.routing.key}")
     private String userDeletedRoutingKey;
 
-    @Value("${rabbitmq.user.updated.routing.key}")
-    private String userUpdatedRoutingKey;
+    @Value("${rabbitmq.user.email.changed.routing.key}")
+    private String userEmailChangedRoutingKey;
 
 
     @Bean
@@ -69,8 +69,8 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Queue userUpdatedQueue() {
-        return new Queue(userUpdatedQueue);
+    public Queue userEmailChangedQueue() {
+        return new Queue(userEmailChangedQueue);
     }
 
 
@@ -80,7 +80,7 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Binding userUpdatedBinding() {
-        return BindingBuilder.bind(this.userUpdatedQueue()).to(this.authExchange()).with(userUpdatedRoutingKey);
+    public Binding userEmailChangedBinding() {
+        return BindingBuilder.bind(this.userEmailChangedQueue()).to(this.authExchange()).with(userEmailChangedRoutingKey);
     }
 }
