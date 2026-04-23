@@ -33,8 +33,12 @@ public class SecurityConfig {
                         .pathMatchers("/auth/login/**").permitAll()
                         .pathMatchers("/auth/register/**").permitAll()
 
+                        .pathMatchers("/auth/driver/register").hasAnyRole("ADMIN", "SUPERUSER")
                         .pathMatchers("/places/**").hasAnyRole("ADMIN", "SUPERUSER")
                         .pathMatchers("/audit/**").hasAnyRole("ADMIN", "SUPERUSER")
+                        .pathMatchers("/transports/routes/register").hasAnyRole("ADMIN", "SUPERUSER")
+                        .pathMatchers("/transports/trips/register").hasAnyRole("ADMIN", "SUPERUSER")
+                        .pathMatchers("/transports/bus/register").hasAnyRole("ADMIN", "SUPERUSER")
                         .anyExchange().authenticated()
                 )
                 .build();
