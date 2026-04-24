@@ -9,6 +9,7 @@ import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.authentication.ServerAuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -21,6 +22,7 @@ public class SecurityConfig {
         return http.csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .addFilterBefore(securityFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers("/auth/health-check").permitAll()
@@ -29,6 +31,11 @@ public class SecurityConfig {
                         .pathMatchers("/places/health-check").permitAll()
                         .pathMatchers("/audit/health-check").permitAll()
                         .pathMatchers("/locations/health-check").permitAll()
+
+                        .pathMatchers("/auth/google/complete-registration").permitAll()
+                        .pathMatchers("/auth/login/oauth2/**").permitAll()
+                        .pathMatchers("/auth/oauth2/**").permitAll()
+                        .pathMatchers("/auth/auth/google/success").permitAll()
 
                         .pathMatchers("/auth/login/**").permitAll()
                         .pathMatchers("/auth/register/**").permitAll()
