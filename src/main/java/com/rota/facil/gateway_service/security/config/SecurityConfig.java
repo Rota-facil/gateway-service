@@ -32,13 +32,12 @@ public class SecurityConfig {
                         .pathMatchers("/audit/health-check").permitAll()
                         .pathMatchers("/locations/health-check").permitAll()
 
+                        .pathMatchers("/auth/user/login").permitAll()
+                        .pathMatchers("/auth/register/**").permitAll()
                         .pathMatchers("/auth/google/complete-registration").permitAll()
                         .pathMatchers("/auth/login/oauth2/**").permitAll()
                         .pathMatchers("/auth/oauth2/**").permitAll()
                         .pathMatchers("/auth/auth/google/success").permitAll()
-
-                        .pathMatchers("/auth/login/**").permitAll()
-                        .pathMatchers("/auth/register/**").permitAll()
 
                         .pathMatchers("/auth/user/prefecture/register").hasRole("SUPERUSER")
                         .pathMatchers("/auth/prefectures/**").hasRole("SUPERUSER")
