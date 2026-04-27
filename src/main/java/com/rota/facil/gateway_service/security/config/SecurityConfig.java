@@ -25,6 +25,7 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .addFilterBefore(securityFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .authorizeExchange(exchange -> exchange
+                        .pathMatchers("/actuator/**").permitAll()
                         .pathMatchers("/auth/health-check").permitAll()
                         .pathMatchers("/transports/health-check").permitAll()
                         .pathMatchers("/files/health-check").permitAll()

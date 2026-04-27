@@ -24,6 +24,58 @@ services:
     networks:
       - rota-facil-network
 
+  otel-collector:
+    container_name: otel-collector
+    image: otel/opentelemetry-collector-contrib:latest
+    volumes:
+      - ./src/main/java/com/rota/facil/gateway_service/observability/otel-collector.config.yaml:/etc/otel-config.yaml
+    command: [ "--config=/etc/otel-config.yaml" ]
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    networks:
+      - rota-facil-network
+
+  tempo:
+    container_name: tempo
+    image: grafana/tempo:latest
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./src/main/java/com/rota/facil/gateway_service/observability/tempo.config.yaml:/etc/tempo.yaml
+    ports:
+      - "3200:3200"
+    networks:
+        - rota-facil-network
+
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    volumes:
+      - ./src/main/java/com/rota/facil/gateway_service/observability/prometheus.config.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - rota-facil-network
+
+  loki:
+    container_name: loki
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    networks:
+      - rota-facil-network
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - rota-facil-network
+
 volumes:
   rabbitmq-data:
   redis-data:
