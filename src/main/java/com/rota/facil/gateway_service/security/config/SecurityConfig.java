@@ -7,9 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.authentication.ServerAuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -25,6 +23,8 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .addFilterBefore(securityFilter, SecurityWebFiltersOrder.AUTHENTICATION)
                 .authorizeExchange(exchange -> exchange
+                        .pathMatchers("/v3/api-docs/**", "/swagger-ui/**", "/webjars/**", "/*/v3/api-docs").permitAll()
+                        .pathMatchers("/*/v3/api-docs/**", "/*/swagger-ui/**", "/*/swagger-ui.html").permitAll()
                         .pathMatchers("/actuator/**").permitAll()
                         .pathMatchers("/auth/health-check").permitAll()
                         .pathMatchers("/transports/health-check").permitAll()
