@@ -31,3 +31,8 @@ spring:
           uri: lb://location-service
           predicates:
             - Path=/locations/**
+
+        - id: notification-service
+          uri: lb://notification-service
+          predicates: 
+            - Path=/notifications/**
