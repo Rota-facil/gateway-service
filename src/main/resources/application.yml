@@ -5,8 +5,8 @@ spring:
         cors-configurations:
           '[/**]':
             allowed-origins:
-              - ${WEB_BASE_URL}
-              - ${APP_BASE_URL}
+              - ${WEB_BASE_URL:http://localhost:3001}
+              - ${APP_BASE_URL:http://localhost:8099}
             allowed-methods:
               - GET
               - POST
