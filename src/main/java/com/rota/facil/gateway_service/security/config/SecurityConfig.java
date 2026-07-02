@@ -2,6 +2,7 @@ package com.rota.facil.gateway_service.security.config;
 
 import com.rota.facil.gateway_service.security.filters.SecurityFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -43,12 +44,28 @@ public class SecurityConfig {
                         .pathMatchers("/auth/oauth2/**").permitAll()
                         .pathMatchers("/auth/auth/google/success").permitAll()
 
-                        .pathMatchers("/auth/user/prefecture/register").hasRole("SUPERUSER")
-                        .pathMatchers("/auth/prefectures/**").hasRole("SUPERUSER")
+                        .pathMatchers(HttpMethod.GET, "/places/**").authenticated()
+
                         .pathMatchers("/places/**").hasAnyRole("ADMIN", "SUPERUSER")
                         .pathMatchers("/audit/**").hasAnyRole("ADMIN", "SUPERUSER")
+                        .pathMatchers("/transports/metrics/**").hasAnyRole("ADMIN", "SUPERUSER")
+
+                        .pathMatchers("/auth/user/prefecture/register").hasRole("SUPERUSER")
+                        .pathMatchers("/auth/prefectures/**").hasRole("SUPERUSER")
+
 
                         .pathMatchers("/auth/driver/register").hasRole("ADMIN")
+                        .pathMatchers("/auth/user/prefecture/register").hasRole("ADMIN")
+
+                        .pathMatchers("/transports/trips/{tripId}/join").hasAnyRole("STUDENT")
+                        .pathMatchers("/transports/trips/{tripId}/exit").hasAnyRole("STUDENT")
+                        .pathMatchers("/transports/trips/{tripId}/checkin").hasAnyRole("STUDENT")
+
+                        .pathMatchers("/transports/trips/my-trips").hasAnyRole("STUDENT", "DRIVER")
+
+                        .pathMatchers("/transports/trips/{tripId}/init").hasAnyRole("DRIVER")
+                        .pathMatchers("/transports/trips/{tripId}/cancel").hasAnyRole("DRIVER")
+
                         .pathMatchers("/transports/routes/register").hasAnyRole("ADMIN")
                         .pathMatchers("/transports/trips/register").hasAnyRole("ADMIN")
                         .pathMatchers("/transports/bus/register").hasAnyRole("ADMIN")
