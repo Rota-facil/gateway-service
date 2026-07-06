@@ -18,11 +18,8 @@ public class RabbitConfig {
     @Value("${rabbitmq.auth.exchange}")
     private String authExchange;
 
-    @Value("${rabbitmq.gateway.user.deleted.queue}")
-    private String userDeletedQueue;
-
-    @Value("${rabbitmq.gateway.user.email.changed.queue}")
-    private String userEmailChangedQueue;
+    @Value("${rabbitmq.gateway.user.token.invalid.queue}")
+    private String invalidUserTokenQueue;
 
     @Value("${rabbitmq.user.deleted.routing.key}")
     private String userDeletedRoutingKey;
@@ -30,6 +27,8 @@ public class RabbitConfig {
     @Value("${rabbitmq.user.email.changed.routing.key}")
     private String userEmailChangedRoutingKey;
 
+    @Value("${rabbitmq.user.logout.routing.key}")
+    private String userLogoutRoutingKey;
 
     @Bean
     public Jackson2JsonMessageConverter messageConverter(ObjectMapper objectMapper) {
@@ -64,23 +63,22 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Queue userDeletedQueue() {
-        return new Queue(userDeletedQueue);
+    public Queue invalidUserTokenQueue() {
+        return new Queue(invalidUserTokenQueue);
     }
-
-    @Bean
-    public Queue userEmailChangedQueue() {
-        return new Queue(userEmailChangedQueue);
-    }
-
 
     @Bean
     public Binding userDeletedBinding() {
-        return BindingBuilder.bind(this.userDeletedQueue()).to(this.authExchange()).with(userDeletedRoutingKey);
+        return BindingBuilder.bind(this.invalidUserTokenQueue()).to(this.authExchange()).with(userDeletedRoutingKey);
     }
 
     @Bean
     public Binding userEmailChangedBinding() {
-        return BindingBuilder.bind(this.userEmailChangedQueue()).to(this.authExchange()).with(userEmailChangedRoutingKey);
+        return BindingBuilder.bind(this.invalidUserTokenQueue()).to(this.authExchange()).with(userEmailChangedRoutingKey);
+    }
+
+    @Bean
+    public Binding logoutBinding() {
+        return BindingBuilder.bind(this.invalidUserTokenQueue()).to(this.authExchange()).with(userLogoutRoutingKey);
     }
 }

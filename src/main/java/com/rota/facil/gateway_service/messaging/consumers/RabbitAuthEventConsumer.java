@@ -16,8 +16,7 @@ public class RabbitAuthEventConsumer {
     private final RedisService redisService;
 
     @RabbitListener(queues = {
-            "${rabbitmq.gateway.user.deleted.queue}",
-            "${rabbitmq.gateway.user.email.changed.queue}"
+            "${rabbitmq.gateway.user.token.invalid.queue}",
     })
     public void handlerUserDeleted(AuthUserDeletedEventReceive authUserDeletedEventReceive) {
         try {
