@@ -60,6 +60,7 @@ public class SecurityConfig {
                         .pathMatchers("/transports/trips/{tripId}/join").hasAnyRole("STUDENT")
                         .pathMatchers("/transports/trips/{tripId}/exit").hasAnyRole("STUDENT")
                         .pathMatchers("/transports/trips/{tripId}/checkin").hasAnyRole("STUDENT")
+                        .pathMatchers("/auth/user/prefecture/{prefectureId}/change").hasAnyRole("STUDENT")
 
                         .pathMatchers("/transports/trips/my-trips").hasAnyRole("STUDENT", "DRIVER")
 
