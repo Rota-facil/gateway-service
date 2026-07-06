@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .pathMatchers("/auth/auth/google/success").permitAll()
 
                         .pathMatchers(HttpMethod.GET, "/places/**").authenticated()
+                        .pathMatchers(HttpMethod.GET, "/prefectures/**").authenticated()
 
                         .pathMatchers("/places/**").hasAnyRole("ADMIN", "SUPERUSER")
                         .pathMatchers("/audit/**").hasAnyRole("ADMIN", "SUPERUSER")
