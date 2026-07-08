@@ -55,6 +55,7 @@ public class SecurityConfig {
                         .pathMatchers("/auth/prefectures/**").hasRole("SUPERUSER")
 
 
+                        .pathMatchers(HttpMethod.GET, "/auth/students").hasAnyRole("ADMIN", "SUPERUSER")
                         .pathMatchers("/auth/driver/register").hasRole("ADMIN")
                         .pathMatchers("/auth/user/prefecture/register").hasRole("ADMIN")
 
@@ -69,6 +70,8 @@ public class SecurityConfig {
                         .pathMatchers("/transports/trips/{tripId}/cancel").hasAnyRole("DRIVER")
 
                         .pathMatchers("/transports/routes/register").hasAnyRole("ADMIN")
+                        .pathMatchers(HttpMethod.PUT, "/transports/routes/{routeId}").hasAnyRole("ADMIN")
+                        .pathMatchers(HttpMethod.DELETE, "/transports/routes/{routeId}").hasAnyRole("ADMIN")
                         .pathMatchers("/transports/trips/register").hasAnyRole("ADMIN")
                         .pathMatchers("/transports/bus/register").hasAnyRole("ADMIN")
                         .pathMatchers(HttpMethod.PUT, "/transports/bus/{busId}").hasAnyRole("ADMIN")
