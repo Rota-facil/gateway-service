@@ -71,6 +71,8 @@ public class SecurityConfig {
                         .pathMatchers("/transports/trips/{tripId}/cancel").hasAnyRole("DRIVER")
 
                         .pathMatchers("/transports/routes/register").hasAnyRole("ADMIN")
+                        .pathMatchers(HttpMethod.POST, "/transports/routes/{routeId}/interpreter").hasAnyRole("ADMIN", "SUPERUSER")
+                        .pathMatchers(HttpMethod.GET, "/transports/routes/{routeId}/interpretations").hasAnyRole("ADMIN", "SUPERUSER")
                         .pathMatchers(HttpMethod.PUT, "/transports/routes/{routeId}").hasAnyRole("ADMIN")
                         .pathMatchers(HttpMethod.DELETE, "/transports/routes/{routeId}").hasAnyRole("ADMIN")
                         .pathMatchers("/transports/trips/register").hasAnyRole("ADMIN")
