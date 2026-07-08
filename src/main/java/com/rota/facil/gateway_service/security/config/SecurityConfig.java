@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .pathMatchers("/places/**").hasAnyRole("ADMIN", "SUPERUSER")
                         .pathMatchers("/audit/**").hasAnyRole("ADMIN", "SUPERUSER")
                         .pathMatchers("/transports/metrics/**").hasAnyRole("ADMIN", "SUPERUSER")
+                        .pathMatchers(HttpMethod.GET, "/transports/institutions/route-counts").hasAnyRole("ADMIN", "SUPERUSER")
 
                         .pathMatchers("/auth/user/prefecture/register").hasRole("SUPERUSER")
                         .pathMatchers("/auth/prefectures/**").hasRole("SUPERUSER")
