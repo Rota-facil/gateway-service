@@ -71,6 +71,7 @@ public class SecurityConfig {
                         .pathMatchers("/transports/routes/register").hasAnyRole("ADMIN")
                         .pathMatchers("/transports/trips/register").hasAnyRole("ADMIN")
                         .pathMatchers("/transports/bus/register").hasAnyRole("ADMIN")
+                        .pathMatchers(HttpMethod.PUT, "/transports/bus/{busId}").hasAnyRole("ADMIN")
                         .anyExchange().authenticated()
                 )
                 .build();
