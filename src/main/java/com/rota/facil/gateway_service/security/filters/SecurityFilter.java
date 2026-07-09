@@ -36,12 +36,12 @@ public class SecurityFilter implements WebFilter {
 
         String token = authorization.substring(7);
 
-        if (tokenManager.isValidToken(token)) {
-            if (redisService.getInvalidTokenOfCache(token) != null) {
-                exchange.getResponse().setStatusCode(HttpStatusCode.valueOf(401));
-                return exchange.getResponse().setComplete();
-            }
+        if (!tokenManager.isValidToken(token) || redisService.getInvalidTokenOfCache(token) != null) {
+            exchange.getResponse().setStatusCode(HttpStatusCode.valueOf(401));
+            return exchange.getResponse().setComplete();
+        }
 
+        if (tokenManager.isValidToken(token)) {
             // Extração de dados
             UUID userId = tokenManager.extractUserId(token);
             Role role = tokenManager.extractRole(token);

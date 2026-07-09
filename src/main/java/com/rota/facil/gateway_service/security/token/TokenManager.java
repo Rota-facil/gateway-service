@@ -29,8 +29,12 @@ public class TokenManager {
     }
 
     public boolean isValidToken(String token) {
-        Date expiration = extractClaims(token, Claims::getExpiration);
-        return (expiration.after(new Date(System.currentTimeMillis())));
+        try {
+            Date expiration = extractClaims(token, Claims::getExpiration);
+            return (expiration.after(new Date(System.currentTimeMillis())));
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 
