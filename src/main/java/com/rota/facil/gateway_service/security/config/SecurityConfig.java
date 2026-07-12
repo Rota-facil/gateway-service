@@ -71,6 +71,7 @@ public class SecurityConfig {
                         .pathMatchers("/transports/trips/my-trips").hasAnyRole("STUDENT", "DRIVER")
 
                         .pathMatchers("/transports/trips/{tripId}/init").hasAnyRole("DRIVER")
+                        .pathMatchers("/transports/trips/{tripId}/return/init").hasAnyRole("DRIVER")
                         .pathMatchers("/transports/trips/{tripId}/cancel").hasAnyRole("DRIVER")
 
                         .pathMatchers("/transports/routes/register").hasAnyRole("ADMIN")
