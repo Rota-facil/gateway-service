@@ -50,6 +50,8 @@ public class SecurityConfig {
                         .pathMatchers("/places/**").hasAnyRole("ADMIN", "SUPERUSER")
                         .pathMatchers("/audit/**").hasAnyRole("ADMIN", "SUPERUSER")
                         .pathMatchers("/transports/metrics/**").hasAnyRole("ADMIN", "SUPERUSER")
+                        .pathMatchers("/transports/reports/**").hasAnyRole("ADMIN", "SUPERUSER")
+                        .pathMatchers(HttpMethod.GET, "/transports/feedbacks/users/**").hasAnyRole("ADMIN", "SUPERUSER")
                         .pathMatchers(HttpMethod.POST, "/transports/routes/{routeId}/board-point/heat-map").hasAnyRole("ADMIN", "SUPERUSER")
                         .pathMatchers(HttpMethod.GET, "/files/heat-map/{routeId}/all").hasAnyRole("ADMIN", "SUPERUSER")
                         .pathMatchers(HttpMethod.DELETE, "/files/heat-map/{fileId}").hasAnyRole("ADMIN", "SUPERUSER")
