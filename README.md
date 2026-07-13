@@ -1,96 +1,59 @@
 # gateway-service
 
-API Gateway do Rota Facil. E a porta de entrada HTTP do sistema e concentra roteamento, CORS, validacao de JWT, autorizacao por perfil e propagacao de contexto do usuario para os microservicos.
+API Gateway do Rota Fácil. É a entrada HTTP única e concentra roteamento, CORS, validação de JWT, autorização, invalidação de tokens e propagação de identidade.
 
-## Para que serve
+## Porta e rotas
 
-- Expoe uma entrada unica em `http://localhost:8080`.
-- Resolve servicos via Eureka usando `lb://...`.
-- Valida JWT com chave publica.
-- Consulta Redis para bloquear tokens invalidados.
-- Injeta headers de usuario para os servicos internos.
-
-## Porta e nome
-
-- Aplicacao: `gateway-service`
 - Porta: `8080`
 - Eureka: `${EUREKA_URL:http://localhost:8081/eureka}`
 
-## Rotas
+| Prefixo | Destino |
+| --- | --- |
+| `/auth/**` | `auth-service` |
+| `/files/**` | `file-service` |
+| `/audit/**` | `audit-service` |
+| `/transports/**` | `transport-service` |
+| `/places/**` | `places-service` |
+| `/locations/**` | `location-service` |
+| `/notifications/**` | `notification-service` |
 
-- `/auth/**` -> `auth-service`
-- `/files/**` -> `file-service`
-- `/audit/**` -> `audit-service`
-- `/transports/**` -> `transport-service`
-- `/places/**` -> `places-service`
-- `/locations/**` -> `location-service`
-- `/notifications/**` -> `notification-service`
+O `intelligence-service` é chamado diretamente pelo `transport-service`.
 
-## Seguranca
+## Autenticação e headers
 
-Rotas publicas:
+O filtro valida o JWT com a chave pública, consulta o Redis e encaminha `x-user-id`, `x-user-email`, `x-user-role`, `x-prefecture-id` e `x-user-token`.
 
-- Swagger/OpenAPI: `/v3/api-docs/**`, `/swagger-ui/**`, `/*/v3/api-docs/**`, `/*/swagger-ui/**`
-- Actuator: `/actuator/**`
-- Health checks: `/auth/health-check`, `/transports/health-check`, `/files/health-check`, `/places/health-check`, `/audit/health-check`, `/locations/health-check`
-- Auth publico: `/auth/user/login`, `/auth/register/**`, `/auth/google/complete-registration`, `/auth/login/oauth2/**`, `/auth/oauth2/**`, `/auth/auth/google/success`
+## Regras de autorização
 
-Regras por perfil:
+Rotas públicas incluem `OPTIONS`, Actuator, Swagger/OpenAPI, health checks configurados e fluxos de login, cadastro público e OAuth.
 
-- `SUPERUSER`: `/auth/user/prefecture/register`, `/auth/prefectures/**`
-- `ADMIN` ou `SUPERUSER`: `/places/**`, `/audit/**`
-- `ADMIN`: `/auth/driver/register`, `/transports/routes/register`, `/transports/trips/register`, `/transports/bus/register`
-- Demais rotas: usuario autenticado.
+- `GET /places/**`: autenticado; escritas em `/places/**`: `ADMIN` ou `SUPERUSER`.
+- `/audit/**`, métricas, relatórios, consulta de feedbacks e recursos analíticos: `ADMIN` ou `SUPERUSER`.
+- `/auth/user/prefecture/register` e operações de prefeitura: `SUPERUSER`; GETs de prefeitura são públicos.
+- Listagem de estudantes: `ADMIN` ou `SUPERUSER`.
+- Cadastro/edição de motorista, ônibus, rotas e viagens: regras explícitas de `ADMIN`.
+- Entrada, saída e check-in em viagem, e troca de prefeitura: `STUDENT`.
+- `GET /transports/trips/my-trips`: `STUDENT` ou `DRIVER`.
+- Início da ida, início da volta e cancelamento: `DRIVER`.
+- Demais rotas: autenticado.
 
-Headers encaminhados aos servicos:
+Há duas regras para `/auth/user/prefecture/register`; a de `SUPERUSER` aparece primeiro e prevalece.
 
-- `x-user-id`
-- `x-user-role`
-- `x-user-email`
-- `x-prefecture-id`
-- `x-user-token`
+## Redis e eventos
 
-## Redis e invalidacao de token
+Consome `user.deleted`, `user.email.changed` e `user.logout` de `auth.events`. Os bindings usam a fila `gateway.invalid.user.token.queue` para invalidar tokens no Redis.
 
-O gateway usa Redis para armazenar tokens invalidados por eventos do `auth-service`, especialmente quando usuario e deletado ou troca email. Propriedades principais:
-
-- `REDIS_HOST`
-- `REDIS_PORT`
-- `REDIS_PASSWORD`
-
-## Eventos consumidos
-
-Exchange: `auth.events`
-
-- `user.deleted`
-- `user.email.changed`
-
-As filas default sao `gateway.user.deleted.queue` e `gateway.user.email.changed.queue`.
+Variáveis principais: `PUBLIC_KEY`, `REDIS_*`, `RABBITMQ_*`, `EUREKA_URL`, `WEB_BASE_URL`, `APP_BASE_URL` e `CLOUD_URL`.
 
 ## Como rodar
 
-Pre-requisitos:
-
-- Java 21.
-- Eureka rodando.
-- Redis rodando.
-- RabbitMQ rodando.
-
-Comando:
+Pré-requisitos: Java 21, Eureka, Redis e RabbitMQ.
 
 ```bash
 cd gateway-service
 ./mvnw spring-boot:run
 ```
 
-Variaveis comuns:
+## Limite do domínio
 
-- `EUREKA_URL`
-- `PUBLIC_KEY`
-- `RABBITMQ_HOST`, `RABBITMQ_PORT`, `RABBITMQ_USER`, `RABBITMQ_PASSWORD`
-- `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`
-- `WEB_BASE_URL`, `APP_BASE_URL`
-
-## Especializacao
-
-Este servico nao deve conter regra de negocio de transporte, usuarios, arquivos ou lugares. Sua responsabilidade e borda HTTP, seguranca, roteamento, CORS e propagacao de identidade.
+O gateway atua como borda HTTP e não implementa regras dos domínios.
