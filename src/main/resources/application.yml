@@ -6,7 +6,7 @@ spring:
           '[/**]':
             allowed-origins:
               - ${WEB_BASE_URL:http://localhost:3001}
-              - ${WEB_PRODUCTION_BASE_URL:https://rota-facil-prefecture-bnsvdvb62-rotafacil.vercel.app}
+              - ${WEB_PRODUCTION_BASE_URL:https://rota-facil-prefecture.vercel.app}
               - ${APP_BASE_URL:http://localhost:8099}
               - ${CLOUD_URL}
             allowed-methods:
