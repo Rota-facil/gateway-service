@@ -26,11 +26,30 @@ public class SecurityFilter implements WebFilter {
     private final TokenManager tokenManager;
     private final RedisService redisService;
 
+    private static final List<String> PUBLIC_PATHS = List.of(
+            "/auth/user/login",
+            "/auth/register",
+            "/auth/google/complete-registration",
+            "/auth/login/oauth2",
+            "/auth/oauth2",
+            "/auth/auth/google/success",
+            "/auth/health-check",
+            "/actuator",
+            "/swagger-ui",
+            "/v3/api-docs"
+    );
+
+    private boolean isPublicPath(String path) {
+        return PUBLIC_PATHS.stream().anyMatch(path::startsWith);
+    }
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         String authorization = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
-        if (authorization == null || !authorization.startsWith("Bearer ") || exchange.getRequest().getMethod().equals(HttpMethod.OPTIONS)) {
+        String path = exchange.getRequest().getURI().getPath();
+
+        if (authorization == null || !authorization.startsWith("Bearer ") || isPublicPath(path) || exchange.getRequest().getMethod().equals(HttpMethod.OPTIONS)) {
             return chain.filter(exchange);
         }
 
