@@ -2,10 +2,14 @@ name: github-ci
 
 on:
   push:
+    branches:
+      - develop
+      - main
     paths:
       - "src/**"
       - "Dockerfile"
       - "pom.xml"
+      - ".github/workflows/**"
 
 jobs:
   build:
@@ -32,7 +36,46 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: build-docker-image
-        run: docker build -t thaua1/rota-facil-gateway-service:latest .
+        run: |
+          docker build \
+            -t "thaua1/rota-facil-gateway-service:$GITHUB_SHA" \
+            -t "thaua1/rota-facil-gateway-service:$GITHUB_REF_NAME" \
+            .
 
       - name: push-docker-image-to-dockerhub
-        run: docker push thaua1/rota-facil-gateway-service:latest
+        run: |
+          docker push "thaua1/rota-facil-gateway-service:$GITHUB_SHA"
+          docker push "thaua1/rota-facil-gateway-service:$GITHUB_REF_NAME"
+          if [[ "$GITHUB_REF_NAME" == "main" ]]; then
+            docker tag "thaua1/rota-facil-gateway-service:$GITHUB_SHA" "thaua1/rota-facil-gateway-service:latest"
+            docker push "thaua1/rota-facil-gateway-service:latest"
+          fi
+
+  deploy:
+    name: deploy-production
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
+
+    steps:
+      - name: deploy-service
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: thaua.dev.br
+          username: rota-facil
+          fingerprint: SHA256:AuVbCPpJ1GEoPgWMGgiQkNl9xsS8OGK/mVoWKTTf4ig
+          key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+          command_timeout: 10m
+          script_stop: true
+          script: |
+            set -e
+            cd /home/rota-facil/rota-facil
+            sudo docker-compose -f services-docker-compose.yaml pull gateway-service
+            sudo docker stop gateway-service || true
+            sudo docker rm -f gateway-service || true
+            sudo docker-compose -f services-docker-compose.yaml up -d --no-deps gateway-service
+            test "$(sudo docker inspect --format='{{.State.Running}}' gateway-service)" = "true"
